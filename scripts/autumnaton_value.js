@@ -79,7 +79,7 @@ function averageAutumnatonValue(
     .filter((m) => !badAttributes.some((s) => m.attributes.includes(s)) && rates[m.name] > 0);
 
   if (monsters.length === 0) {
-    return 0;
+    return null;
   } else {
     const maximumDrops = 5;
     const acuityCutoff = 20 - (3) * 5;
@@ -92,6 +92,9 @@ function averageAutumnatonValue(
         postAcuityExpectation:
           rate >= acuityCutoff && ["c", "0", ""].includes(type) ? (8 * rate) / 100 : 0,
       }));
+    if (validDrops.length === 0) {
+      return null;
+    }
     const overallExpectedDropQuantity = sum(
       validDrops,
       ({ preAcuityExpectation, postAcuityExpectation }) =>
@@ -112,7 +115,7 @@ function averageAutumnatonValue(
 }
 
 function main() {
-  const autumnMap = new Map(Location.all().filter(x => x.parent != "Removed").map(l => [l, averageAutumnatonValue(l)]).sort((a, b) => a[1] - b[1]));
+  const autumnMap = new Map(Location.all().filter(x => x.parent != "Removed").map(l => [l, averageAutumnatonValue(l)]).filter(x => x[1] != null).sort((a, b) => a[1] - b[1]));
   for (let v of autumnMap) {
     print(`${v[1].toFixed(0)} - ${v[0]} - ${v[0].zone}`)
   }
