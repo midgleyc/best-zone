@@ -178,9 +178,14 @@ function autumnMain() {
 }
 
 function catMain() {
-  const autumnMap = new Map(Location.all().filter(x => x.parent != "Removed").map(l => [l, averageAutumnatonValue(l)]).filter(x => x[1] != null).sort((a, b) => a[1] - b[1]));
+  const autumnMap = new Map(Location.all()
+  .filter(x => x.parent != "Removed" && x.root != "Removed")
+  .map(l => catDrops(l))
+  .filter(x => x != null)
+  .flat()
+  .sort((a, b) => a[1] - b[1]));
   for (let v of autumnMap) {
-    print(`${v[1].toFixed(0)} - ${v[0]} - ${v[0].zone}`)
+    print(`${v[1].toFixed(0)} - ${v[0].name}`)
   }
 }
 
