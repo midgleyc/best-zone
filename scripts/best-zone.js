@@ -114,11 +114,87 @@ function averageAutumnatonValue(
   }
 }
 
-function main() {
+function pawDrops(
+  location
+) {
+  const badAttributes = ["LUCKY", "ULTRARARE", "BOSS", "NOCOPY"];
+  const rates = appearanceRates(location);
+  const monsters = Object.keys(getLocationMonsters(location))
+    .map((m) => toMonster(m))
+    .filter((m) => !badAttributes.some((s) => m.attributes.includes(s)) && rates[m.name] > 0);
+
+  if (monsters.length === 0) {
+    return null;
+  } else {
+    const validDrops = monsters
+      .map((m) => itemDropsArray(m))
+      .flat()
+	  .map(x => [x.drop, garboValue(x.drop, true)]);
+    if (validDrops.length === 0) {
+      return null;
+    }
+    return validDrops;
+  }
+}
+
+function catDrops(location) {
+  const rates = appearanceRates(location);
+  const monsters = Object.keys(getLocationMonsters(location))
+    .map((m) => toMonster(m))
+    .filter((m) => rates[m.name] > 0);
+
+  if (monsters.length === 0) {
+    return null;
+  } else {
+    const validDrops = monsters
+      .map((m) => itemDropsArray(m))
+      .flat()
+	  .filter(x => !["c", "p"].includes(type))
+	  .map(x => [x.drop, garboValue(x.drop, true)]);
+    if (validDrops.length === 0) {
+      return null;
+    }
+    return validDrops;
+  }
+}
+
+function ppMain() {
+  const autumnMap = new Map(Location.all()
+  .filter(x => x.parent != "Removed" && x.root != "Removed")
+  .map(l => pawDrops(l))
+  .filter(x => x != null)
+  .flat()
+  .sort((a, b) => a[1] - b[1]));
+  for (let v of autumnMap) {
+    print(`${v[1].toFixed(0)} - ${v[0].name}`)
+  }
+}
+
+function autumnMain() {
   const autumnMap = new Map(Location.all().filter(x => x.parent != "Removed").map(l => [l, averageAutumnatonValue(l)]).filter(x => x[1] != null).sort((a, b) => a[1] - b[1]));
   for (let v of autumnMap) {
     print(`${v[1].toFixed(0)} - ${v[0]} - ${v[0].zone}`)
   }
+}
+
+function catMain() {
+  const autumnMap = new Map(Location.all().filter(x => x.parent != "Removed").map(l => [l, averageAutumnatonValue(l)]).filter(x => x[1] != null).sort((a, b) => a[1] - b[1]));
+  for (let v of autumnMap) {
+    print(`${v[1].toFixed(0)} - ${v[0]} - ${v[0].zone}`)
+  }
+}
+
+function main(args) {
+	[type, id] = args.split(" ");
+	if (type == "autumnaton") {
+		autumnMain();
+	} else if (type == "monkeypaw") {
+		ppMain()
+	} else if (type == "cat") {
+		catMain()
+	} else {
+		print("best-zone [autumnaton|monkeypaw|cat]");
+	}
 }
 
 module.exports.main = main
