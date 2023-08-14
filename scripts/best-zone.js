@@ -190,7 +190,7 @@ function catMain() {
 }
 
 function main(args) {
-	[type, id] = args.split(" ");
+	[type, id] = (args || "").split(" ");
 	if (type == "autumnaton") {
 		autumnMain();
 	} else if (type == "monkeypaw") {
