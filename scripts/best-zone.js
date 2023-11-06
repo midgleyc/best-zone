@@ -137,25 +137,14 @@ function pawDrops(
   }
 }
 
-function catDrops(location) {
-  const rates = appearanceRates(location);
-  const monsters = Object.keys(getLocationMonsters(location))
-    .map((m) => toMonster(m))
-    .filter((m) => rates[m.name] > 0);
-
-  if (monsters.length === 0) {
+function catDrops(monster) {
+  const validDrops = itemDropsArray(monster)
+    .filter(x => !["c", "p"].includes(x.type))
+    .map(x => [x.drop, garboValue(x.drop, true)]);
+  if (validDrops.length === 0) {
     return null;
-  } else {
-    const validDrops = monsters
-      .map((m) => itemDropsArray(m))
-      .flat()
-	  .filter(x => !["c", "p"].includes(type))
-	  .map(x => [x.drop, garboValue(x.drop, true)]);
-    if (validDrops.length === 0) {
-      return null;
-    }
-    return validDrops;
   }
+  return validDrops;
 }
 
 function ppMain() {
@@ -178,13 +167,13 @@ function autumnMain() {
 }
 
 function catMain() {
-  const autumnMap = new Map(Location.all()
-  .filter(x => x.parent != "Removed" && x.root != "Removed")
-  .map(l => catDrops(l))
+  const catMap = new Map(Monster.all()
+  .filter(x => !x.attributes.includes("NOCOPY"))
+  .map(m => catDrops(m))
   .filter(x => x != null)
   .flat()
   .sort((a, b) => a[1] - b[1]));
-  for (let v of autumnMap) {
+  for (let v of catMap) {
     print(`${v[1].toFixed(0)} - ${v[0].name}`)
   }
 }
