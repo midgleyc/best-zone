@@ -139,7 +139,7 @@ function pawDrops(
 
 function catDrops(monster) {
   const validDrops = itemDropsArray(monster)
-    .filter(x => !["c", "p"].includes(x.type))
+    .filter(x => !["c", "p", "f", "a"].includes(x.type))
     .map(x => [x.drop, garboValue(x.drop, true)]);
   if (validDrops.length === 0) {
     return null;
